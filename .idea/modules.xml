@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DistributedFramework.iml" filepath="$PROJECT_DIR$/DistributedFramework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Host/Host.iml" filepath="$PROJECT_DIR$/Host/Host.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Node/Node.iml" filepath="$PROJECT_DIR$/Node/Node.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Shared/Shared.iml" filepath="$PROJECT_DIR$/Shared/Shared.iml" />
     </modules>
   </component>
 </project>
