@@ -2,10 +2,7 @@ package net.shared.distributed.receptor;
 
 import net.shared.distributed.logging.Logger;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -61,8 +58,8 @@ public class Receptor {
         }
 
         public void Process() {
-            PrintWriter oos = null;
-            BufferedReader ois = null;
+            ObjectOutputStream oos = null;
+            ObjectInputStream ois = null;
             Socket skt = null;
             while(this.isAlive) {
                 try {
@@ -70,28 +67,23 @@ public class Receptor {
                     if(skt == null) continue;
                     Logger.instance().Debug("Socket connected: "+skt.getInetAddress());
 
-                    oos = new PrintWriter(skt.getOutputStream());
+                    oos = new ObjectOutputStream(skt.getOutputStream());
                     oos.flush();
                     Logger.instance().Debug("Output stream constructed");
-                    oos.write("NOTIFICATION:CONNECTED");
+                    oos.writeChars("NOTIFICATION:CONNECTED\n");
 
-                    ois = new BufferedReader(new InputStreamReader(skt.getInputStream()));
+                    ois = new ObjectInputStream(skt.getInputStream());
                     Logger.instance().Debug("Input stream constructed");
 
-                    StringBuilder sb = new StringBuilder();
-                    String line = null;
-                    while(ois.ready() && (line = ois.readLine()) != null)
-                        sb.append(line);
-                    String collect = sb.toString();
 
-                    Object obj = collect;
+                    Object obj = ois.readObject();
 
-                    oos.write("NOTIFICATION:RECEIVED");
+                    oos.writeChars("NOTIFICATION:RECEIVED\n");
 
                     Logger.instance().Info("Received data from "+skt.getInetAddress()+":"+skt.getPort());
                     Logger.instance().Debug(obj.toString());
 
-                    this.func.accept(skt, obj.toString());
+                    this.func.accept(skt, obj);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

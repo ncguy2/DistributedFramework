@@ -1,9 +1,8 @@
 package net.shared.distributed.network;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import net.shared.distributed.logging.Logger;
+
+import java.io.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -13,7 +12,7 @@ public class AsyncNetworkSocket extends NetworkSocket {
 
     protected Thread socketThread;
     protected String name;
-    protected BiConsumer<AsyncNetworkSocket, String> process;
+    protected BiConsumer<AsyncNetworkSocket, Object> process;
 
     public AsyncNetworkSocket(String host, int port) throws IOException {
         this(host, port, "SocketThread");
@@ -29,7 +28,7 @@ public class AsyncNetworkSocket extends NetworkSocket {
      * @param process
      * @return The self instance, for method chaining
      */
-    public AsyncNetworkSocket SetCallback(BiConsumer<AsyncNetworkSocket, String> process) {
+    public AsyncNetworkSocket SetCallback(BiConsumer<AsyncNetworkSocket, Object> process) {
         this.process = process;
         return this;
     }
@@ -40,21 +39,27 @@ public class AsyncNetworkSocket extends NetworkSocket {
      * TODO redesign to accommodate generic binary objects
      */
     public void Send(Object payload) {
+
+        if(!(payload instanceof Serializable)) {
+            Logger.instance().Error(payload.getClass().getCanonicalName() + " is not suitable for serialization");
+            return;
+        }
+
         socketThread = new Thread(() -> {
             try {
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
-                out.print(payload);
+                out.writeObject(payload);
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
-                String line;
-                StringBuilder lines = new StringBuilder();
-                while((line = in.readLine()) != null)
-                    lines.append(line);
-                if(process != null)
-                    process.accept(AsyncNetworkSocket.this, lines.toString());
-            } catch (IOException e) {
+                while(in.available() > 0) {
+                    Object obj = in.readObject();
+                    if(process != null)
+                        process.accept(AsyncNetworkSocket.this, obj);
+                }
+
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }, name);

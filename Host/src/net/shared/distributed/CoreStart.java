@@ -2,6 +2,7 @@ package net.shared.distributed;
 
 import net.shared.distributed.core.Core;
 import net.shared.distributed.distributor.Distributor;
+import net.shared.distributed.logging.LogPayload;
 import net.shared.distributed.logging.Logger;
 import net.shared.distributed.receptor.Receptor;
 
@@ -19,7 +20,10 @@ public class CoreStart {
                 Logger.instance().Debug(obj.getClass().getSimpleName()+", "+obj.toString());
             });
             receptor.StartListening(Registry.REMOTE_LOG_PORT, (skt, obj) -> {
-                Logger.instance().Debug("LOG: "+obj.getClass().getSimpleName()+", "+obj.toString());
+                if(obj instanceof LogPayload) {
+                    LogPayload payload = (LogPayload)obj;
+                    Logger.instance().Log(payload.level, payload.text);
+                }
             });
         } catch (IOException e) {
             e.printStackTrace();

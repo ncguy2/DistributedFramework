@@ -2,6 +2,7 @@ package net.shared.distributed.node.logging;
 
 import net.shared.distributed.Registry;
 import net.shared.distributed.logging.ILogImpl;
+import net.shared.distributed.logging.LogPayload;
 import net.shared.distributed.logging.Logger;
 import net.shared.distributed.network.AsyncNetworkSocket;
 
@@ -34,16 +35,6 @@ public class NodeLogImpl implements ILogImpl {
         System.out.println(s);
         if(this.socket != null)
             this.socket.Send(new LogPayload(level, text));
-    }
-
-    public static class LogPayload {
-        public Logger.LogLevel level;
-        public String text;
-
-        public LogPayload(Logger.LogLevel level, String text) {
-            this.level = level;
-            this.text = text;
-        }
     }
 
 }
