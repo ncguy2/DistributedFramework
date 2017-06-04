@@ -1,44 +1,44 @@
 package net.shared.distributed.node;
 
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import net.shared.distributed.TypeFunctionHandler;
 import net.shared.distributed.logging.Logger;
-import net.shared.distributed.network.AsyncNetworkSocket;
 import net.shared.distributed.network.commands.KillCommand;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 
 public class NodeCore {
 
     protected TypeFunctionHandler handler;
-    protected InetAddress coreHost;
-    protected int socketPort;
-    protected AsyncNetworkSocket socket;
+    protected Client client;
 
-    public NodeCore(InetAddress coreHost, int port) {
-        this.coreHost = coreHost;
-        this.socketPort = port;
-    }
-
-    private static void Accept(KillCommand __, Socket ___) {
-        NodeStart.NodeInterface.Kill();
+    public NodeCore(Client client) {
+        this.client = client;
     }
 
     public void Register() throws IOException {
-        socket = new AsyncNetworkSocket(coreHost.getHostAddress(), socketPort);
-        socket.SetCallback((aNetSock, response) -> {
-            Logger.instance().Debug("Response from core: "+response);
+        client.addListener(new Listener() {
+            @Override
+            public void received(Connection connection, Object object) {
+                handler.AcceptObject(object, connection);
+            }
         });
-        socket.Send("COMMAND:NODE_REGISTER");
+        client.sendTCP("NODECORE_CONNECT");
     }
 
-    public NodeCore Initialize() {
+    public NodeCore Initialize() throws IOException {
         Logger.instance().Debug("NodeCore initializing");
         handler = new TypeFunctionHandler();
         handler.AddTypeHandler(KillCommand.class, NodeCore::Accept);
         Logger.instance().Debug("NodeCore initialized");
         return this;
     }
+
+    private static void Accept(KillCommand __, Connection ___) {
+        NodeStart.NodeInterface.Kill();
+    }
+
 
 }

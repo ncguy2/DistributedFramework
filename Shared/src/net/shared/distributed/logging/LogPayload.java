@@ -11,6 +11,9 @@ public class LogPayload implements Serializable {
     public Logger.LogLevel level;
     public String text;
 
+    public LogPayload() {
+    }
+
     public LogPayload(Logger.LogLevel level, String text) {
         this.level = level;
         this.text = text;

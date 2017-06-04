@@ -8,4 +8,6 @@ public class NodeShutdownCommand implements Serializable {
 
     public static final long serialVersionUID = Registry.SerialVersions.SHUTDOWN_COMMAND;
 
+    public NodeShutdownCommand() {
+    }
 }

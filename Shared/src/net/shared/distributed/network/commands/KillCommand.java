@@ -8,4 +8,6 @@ public class KillCommand implements Serializable {
 
     public static final long serialVersionUID = Registry.SerialVersions.KILL_COMMAND;
 
+    public KillCommand() {
+    }
 }

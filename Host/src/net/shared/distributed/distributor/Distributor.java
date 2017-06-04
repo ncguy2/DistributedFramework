@@ -1,5 +1,6 @@
 package net.shared.distributed.distributor;
 
+import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.core.Core;
 
 import java.io.ObjectInputStream;
@@ -14,7 +15,7 @@ import java.util.Map;
  */
 public class Distributor {
 
-    public Map<NodeSocketKey, Socket> nodeSockets;
+    public Map<Integer, Connection> nodeSockets;
 
     public final Core core;
 

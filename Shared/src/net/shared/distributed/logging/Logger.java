@@ -11,6 +11,8 @@ public class Logger {
         return instance;
     }
 
+    public int logLevel = VERBOSE.ordinal();
+
     private Logger() {
         SetLogImpl(new DefaultLogImpl());
     }
@@ -25,21 +27,23 @@ public class Logger {
         this.impl.Log(level, text);
     }
 
-    public void Info (String text) { Log(INFO,  text); }
-    public void Warn (String text) { Log(WARN,  text); }
-    public void Error(String text) { Log(ERROR, text); }
-    public void Fatal(String text) { Log(FATAL, text); }
-    public void Debug(String text) { Log(DEBUG, text); }
+    public void Info   (String text) { Log(INFO,    text); }
+    public void Warn   (String text) { Log(WARN,    text); }
+    public void Error  (String text) { Log(ERROR,   text); }
+    public void Fatal  (String text) { Log(FATAL,   text); }
+    public void Debug  (String text) { Log(DEBUG,   text); }
+    public void Verbose(String text) { Log(VERBOSE, text); }
 
     public enum LogLevel {
-        INFO,
-        WARN,
-        ERROR,
         FATAL,
+        ERROR,
+        WARN,
+        INFO,
         DEBUG,
+        VERBOSE
         ;
 
-        public static int longest = 5;
+        public static int longest = 7;
 
         public String PaddedName() {
             return String.format("%1$"+longest+"s", name());

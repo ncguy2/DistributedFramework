@@ -1,5 +1,6 @@
 package net.shared.distributed;
 
+import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.core.Core;
 import net.shared.distributed.distributor.Distributor;
 import net.shared.distributed.logging.LogPayload;
@@ -8,8 +9,6 @@ import net.shared.distributed.network.commands.NodeShutdownCommand;
 import net.shared.distributed.receptor.Receptor;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 public class CoreStart {
 
@@ -17,33 +16,23 @@ public class CoreStart {
     public static Distributor distributor;
     public static Receptor receptor;
 
-    public static void main(String[] args) {
+    public static void main(String... args) {
         core = new Core();
         distributor = new Distributor(core);
         receptor = new Receptor(core, distributor);
 
-        core.GetHandler().AddTypeHandler(NodeShutdownCommand.class, (cmd, socket) -> {
-            Distributor.NodeSocketKey key = new Distributor.NodeSocketKey(socket.getInetAddress(), socket.getPort());
-            Logger.instance().Warn("Node shutdown detected from "+key.toString());
-            distributor.nodeSockets.remove(key);
-        });
+        core.GetHandler().AddTypeHandler(LogPayload.class, (log, conn) -> Logger.instance().Log(log.level, log.text));
 
         try {
-            receptor.StartListening(Registry.NODE_COMM_PORT, CoreStart::NodeCommFunctions);
-            receptor.StartListening(Registry.REMOTE_LOG_PORT, CoreStart::LogFunction);
+            receptor.StartListening(Registry.TCP_PORT, Registry.UDP_PORT, CoreStart::NodeCommFunctions);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
             Thread.sleep(2500);
-            distributor.nodeSockets.forEach((key, skt) -> {
-                try {
-                    ObjectOutputStream oos = new ObjectOutputStream(skt.getOutputStream());
-                    oos.writeObject(new NodeShutdownCommand());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            distributor.nodeSockets.forEach((key, conn) -> {
+                conn.sendTCP(new NodeShutdownCommand());
             });
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -53,16 +42,9 @@ public class CoreStart {
 
     }
 
-    public static void NodeCommFunctions(Socket skt, Object obj) {
-        Logger.instance().Debug(obj.getClass().getSimpleName()+", "+obj.toString());
-        core.GetHandler().AcceptObject(obj, skt);
-    }
-
-    public static void LogFunction(Socket skt, Object obj) {
-        if(obj instanceof LogPayload) {
-            LogPayload payload = (LogPayload)obj;
-            Logger.instance().Log(payload.level, payload.text);
-        }
+    public static void NodeCommFunctions(Connection conn, Object obj) {
+        Logger.instance().Verbose(obj.getClass().getSimpleName()+", "+obj.toString());
+        core.GetHandler().AcceptObject(obj, conn);
     }
 
 }

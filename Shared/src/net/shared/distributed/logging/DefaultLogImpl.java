@@ -4,6 +4,7 @@ public class DefaultLogImpl implements ILogImpl {
 
     @Override
     public void Log(Logger.LogLevel level, String text) {
-        System.out.println(this.ConstructLine(level, text));
+        if(level.ordinal() <= Logger.instance().logLevel)
+            System.out.println(this.ConstructLine(level, text));
     }
 }
