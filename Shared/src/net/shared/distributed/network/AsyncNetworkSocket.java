@@ -49,6 +49,7 @@ public class AsyncNetworkSocket extends NetworkSocket {
             try {
                 ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
+                out.flush();
                 out.writeObject(payload);
 
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());

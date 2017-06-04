@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Node:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Node_jar</output-path>
+    <root id="archive" name="Node.jar">
+      <element id="module-output" name="Node" />
+      <element id="module-output" name="Shared" />
+    </root>
+  </artifact>
+</component>

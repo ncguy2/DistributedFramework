@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Host:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Host_jar</output-path>
+    <root id="archive" name="Host.jar">
+      <element id="module-output" name="Host" />
+      <element id="module-output" name="Shared" />
+    </root>
+  </artifact>
+</component>

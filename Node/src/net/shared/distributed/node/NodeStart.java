@@ -2,6 +2,8 @@ package net.shared.distributed.node;
 
 import net.shared.distributed.Registry;
 import net.shared.distributed.logging.Logger;
+import net.shared.distributed.network.AsyncNetworkSocket;
+import net.shared.distributed.network.commands.NodeShutdownCommand;
 import net.shared.distributed.node.logging.NodeLogImpl;
 import net.shared.distributed.node.operation.NodeOperator;
 
@@ -48,6 +50,15 @@ public class NodeStart {
             System.err.println(coreHost + " is not a valid address");
             return;
         }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                AsyncNetworkSocket socket = new AsyncNetworkSocket(coreHost, corePort);
+                socket.Send(new NodeShutdownCommand());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
 
         operators = new LinkedList<>();
 

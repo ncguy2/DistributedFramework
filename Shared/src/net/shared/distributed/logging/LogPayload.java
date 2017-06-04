@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class LogPayload implements Serializable {
 
-    public static long serialVersionID = Registry.SerialVersions.LOG_PAYLOAD;
+    public static long serialVersionUID = Registry.SerialVersions.LOG_PAYLOAD;
 
     public Logger.LogLevel level;
     public String text;

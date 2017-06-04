@@ -1,8 +1,13 @@
 package net.shared.distributed.receptor;
 
+import net.shared.distributed.CoreStart;
+import net.shared.distributed.core.Core;
+import net.shared.distributed.distributor.Distributor;
 import net.shared.distributed.logging.Logger;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -14,9 +19,13 @@ import java.util.function.BiConsumer;
  */
 public class Receptor {
 
+    public final Core core;
+    public final Distributor distributor;
     protected Map<Integer, ServerSocketWrapper> portSockets;
 
-    public Receptor() {
+    public Receptor(Core core, Distributor distributor) {
+        this.core = core;
+        this.distributor = distributor;
         portSockets = new HashMap<>();
     }
 
@@ -66,6 +75,8 @@ public class Receptor {
                     skt = socket.accept();
                     if(skt == null) continue;
                     Logger.instance().Debug("Socket connected: "+skt.getInetAddress());
+                    Distributor.NodeSocketKey key = new Distributor.NodeSocketKey(skt.getInetAddress(), skt.getPort());
+                    CoreStart.distributor.nodeSockets.put(key, skt);
 
                     oos = new ObjectOutputStream(skt.getOutputStream());
                     oos.flush();
@@ -91,19 +102,14 @@ public class Receptor {
 
                         if(oos != null) {
                             oos.flush();
-                            oos.close();
                             oos = null;
                         }
 
                         if(ois != null) {
-                            ois.close();
                             ois = null;
                         }
 
-                        if(skt != null && !skt.isClosed()) {
-                            skt.close();
-                            skt = null;
-                        }
+                        skt = null;
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -122,5 +128,6 @@ public class Receptor {
             this.isAlive = false;
         }
     }
+
 
 }
