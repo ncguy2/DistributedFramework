@@ -42,26 +42,18 @@ public class AsyncNetworkSocket extends NetworkSocket {
     public void Send(Object payload) {
         socketThread = new Thread(() -> {
             try {
-                PrintWriter out = new PrintWriter(outputStream, true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
-
-                int attempts = 0;
-                while(!in.ready() && attempts < 120) {
-                    attempts++;
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
                 out.print(payload);
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 String line;
                 StringBuilder lines = new StringBuilder();
                 while((line = in.readLine()) != null)
                     lines.append(line);
-                process.accept(AsyncNetworkSocket.this, lines.toString());
+                if(process != null)
+                    process.accept(AsyncNetworkSocket.this, lines.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
