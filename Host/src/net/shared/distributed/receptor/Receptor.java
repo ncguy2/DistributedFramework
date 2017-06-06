@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import net.shared.distributed.CoreStart;
+import net.shared.distributed.capabilities.CapabilityPacket;
 import net.shared.distributed.core.Core;
 import net.shared.distributed.distributor.Distributor;
 import net.shared.distributed.logging.Logger;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -53,7 +55,11 @@ public class Receptor {
             public void connected(Connection connection) {
                 Logger.instance().Info(connection.getID() + " connected");
                 CoreStart.distributor.nodeSockets.put(connection.getID(), connection);
+                CoreStart.distributor.nodeCapabilities.put(connection.getID(), new LinkedHashSet<>());
                 listener.connected(connection);
+
+                CapabilityPacket.Request req = new CapabilityPacket.Request();
+                connection.sendTCP(req);
             }
 
             @Override

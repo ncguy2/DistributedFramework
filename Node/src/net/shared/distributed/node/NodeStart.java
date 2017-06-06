@@ -1,15 +1,18 @@
 package net.shared.distributed.node;
 
 import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.FrameworkMessage;
 import net.shared.distributed.Registry;
+import net.shared.distributed.capabilities.Capabilities;
+import net.shared.distributed.capabilities.Capability;
 import net.shared.distributed.logging.Logger;
+import net.shared.distributed.node.connection.NodeKryoListener;
 import net.shared.distributed.node.logging.NodeLogImpl;
 import net.shared.distributed.node.operation.NodeOperator;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static net.shared.distributed.Registry.RegisterKryoClasses;
 
@@ -22,13 +25,14 @@ public class NodeStart {
     static int coreTCP = Registry.TCP_PORT;
     static int coreUDP = Registry.UDP_PORT;
 
-    private static boolean alive = true;
+    private static AtomicBoolean alive = new AtomicBoolean(true);
     private static Queue<NodeOperator> operators;
     private static long updateFreq = 50;
 
     static boolean hasHost = false;
 
     public static void main(String[] args) {
+        Capabilities.instance().SetSide(Capability.Side.NODE);
         NodeStart.args = args;
         for (index = 0; index < args.length; index++) {
             arg = args[index];
@@ -49,29 +53,9 @@ public class NodeStart {
 
         Client client = new Client();
         RegisterKryoClasses(client.getKryo());
-        client.setKeepAliveTCP(1000);
-        Thread clientThread = new Thread(() -> {
-            while(!client.isConnected()) {
-                try {
-                    client.update(2500);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            while(client.isConnected()) {
-                client.sendTCP(new FrameworkMessage.KeepAlive());
-                try {
-                    Thread.sleep(4000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        clientThread.setDaemon(true);
-        clientThread.start();
-
+        client.addListener(new NodeKryoListener());
         try {
+            client.start();
             client.connect(10000, coreHost, coreTCP);
         } catch (IOException e) {
             e.printStackTrace();
@@ -86,7 +70,7 @@ public class NodeStart {
             e.printStackTrace();
         }
 
-        while (alive) {
+        while (alive.get()) {
             NodeOperator poll = operators.poll();
             if (poll != null)
                 poll.Invoke();
@@ -96,6 +80,8 @@ public class NodeStart {
                 e.printStackTrace();
             }
         }
+
+        System.out.println("Node instance closing");
     }
 
     private static boolean GetCoreHost(String... switches) {
@@ -136,7 +122,7 @@ public class NodeStart {
         }
 
         public static void Kill() {
-            NodeStart.alive = false;
+            NodeStart.alive.set(false);
         }
 
     }

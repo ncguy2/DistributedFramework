@@ -1,6 +1,7 @@
 package net.shared.distributed.core;
 
-import net.shared.distributed.TypeFunctionHandler;
+import net.shared.distributed.capabilities.Capabilities;
+import net.shared.distributed.capabilities.Capability;
 import net.shared.distributed.distributor.Distributor;
 
 /**
@@ -8,18 +9,14 @@ import net.shared.distributed.distributor.Distributor;
  */
 public class Core {
 
-    public TypeFunctionHandler handler;
     public Distributor distributor;
 
     public Core() {
-        handler = new TypeFunctionHandler();
+        Capabilities.instance().SetSide(Capability.Side.HOST);
     }
 
     public void SetDistributor(Distributor distributor) {
         this.distributor = distributor;
     }
 
-    public TypeFunctionHandler GetHandler() {
-        return handler;
-    }
 }
