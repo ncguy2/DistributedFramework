@@ -13,6 +13,7 @@ public class Capabilities {
     public Map<String, Class<?>> capabilities;
     public Set<Class<?>> packetBlacklist;
     public Map<Class<?>, CapabilityFunction<?>> functionCache;
+    public Map<Class<?>, Capability> capabilityCache;
 
     public Capability.Side side = Capability.Side.NONE;
 
@@ -27,6 +28,7 @@ public class Capabilities {
         capabilities = new HashMap<>();
         functionCache = new HashMap<>();
         packetBlacklist = new LinkedHashSet<>();
+        capabilityCache = new HashMap<>();
 
         PopulateBlackList();
 
@@ -62,6 +64,7 @@ public class Capabilities {
 
     public void FindCapabilities() {
         ReflectionHelper.GetAnnotatedTypeStream(Capability.class)
+                .sorted(Comparator.comparingInt(cls -> cls.getCanonicalName().hashCode()))
                 .forEach(this::AddCapability);
     }
 
@@ -72,14 +75,58 @@ public class Capabilities {
         if(IsCapable(objCls)) {
             Logger.instance().Debug(cap.name() + " received, invoking...");
             GetFunction(obj.getClass()).SetPacket_Unsafe(obj).Invoke(conn);
-        }
-        else Logger.instance().Warn("Request received, but is incapable of executing [" + objCls.getSimpleName() + "]");
+        } else Logger.instance().Warn("Request received, but is incapable of executing [" + objCls.getSimpleName() + "]");
     }
 
     public boolean IsCapable(Class<?> cls) {
         return capabilities.values().contains(cls);
     }
 
+    public Optional<Class<?>> GetCapabilityClass(String name) {
+        if(!capabilities.containsKey(name)) return Optional.empty();
+        return Optional.of(capabilities.get(name));
+    }
+
+    public Optional<Capability> GetCapability(String name) {
+        Optional<Class<?>> aClass = GetCapabilityClass(name);
+        if(aClass.isPresent())
+            return GetCapability(aClass.get());
+        return Optional.empty();
+    }
+
+    public Optional<Capability> GetCapability(Class<?> cls) {
+        if(capabilityCache.containsKey(cls))
+            return Optional.ofNullable(capabilityCache.get(cls));
+
+        if(!cls.isAnnotationPresent(Capability.class)) return Optional.empty();
+        Capability cap = cls.getAnnotation(Capability.class);
+        capabilityCache.put(cls, cap);
+        return Optional.of(cap);
+    }
+
+    public boolean IsExternal(String name) {
+        return !IsInternal(name);
+    }
+
+    public boolean IsExternal(Class<?> cls) {
+        return !IsInternal(cls);
+    }
+
+    public boolean IsExternal(Capability cap) {
+        return !IsInternal(cap);
+    }
+
+    public boolean IsInternal(String name) {
+        return GetCapabilityClass(name).filter(this::IsInternal).isPresent();
+    }
+
+    public boolean IsInternal(Class<?> cls) {
+        return GetCapability(cls).filter(this::IsInternal).isPresent();
+    }
+
+    public boolean IsInternal(Capability cap) {
+        return cap.internal();
+    }
 
     public <T> Class<? extends CapabilityFunction<T>> GetFunctionClass(Class<T> cls) {
         Capability cap = cls.getAnnotation(Capability.class);

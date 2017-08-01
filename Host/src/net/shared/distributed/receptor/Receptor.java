@@ -7,6 +7,8 @@ import net.shared.distributed.CoreStart;
 import net.shared.distributed.capabilities.CapabilityPacket;
 import net.shared.distributed.core.Core;
 import net.shared.distributed.distributor.Distributor;
+import net.shared.distributed.event.NodeConnectedEvent;
+import net.shared.distributed.event.NodeDisconnectedEvent;
 import net.shared.distributed.logging.Logger;
 
 import java.io.IOException;
@@ -58,6 +60,8 @@ public class Receptor {
                 CoreStart.distributor.nodeCapabilities.put(connection.getID(), new LinkedHashSet<>());
                 listener.connected(connection);
 
+                new NodeConnectedEvent(connection.getID()).Fire();
+
                 CapabilityPacket.Request req = new CapabilityPacket.Request();
                 connection.sendTCP(req);
             }
@@ -66,6 +70,7 @@ public class Receptor {
             public void disconnected(Connection connection) {
                 Logger.instance().Warn(connection.getID() + " disconnected");
                 CoreStart.distributor.nodeSockets.remove(connection.getID());
+                new NodeDisconnectedEvent(connection.getID()).Fire();
                 listener.disconnected(connection);
             }
 

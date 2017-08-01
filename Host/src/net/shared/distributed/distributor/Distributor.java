@@ -5,6 +5,7 @@ import net.shared.distributed.RoutedResponse;
 import net.shared.distributed.capabilities.Capability;
 import net.shared.distributed.core.Core;
 import net.shared.distributed.event.EventBus;
+import net.shared.distributed.event.EventHandledEvent;
 import net.shared.distributed.event.host.CapabilityResponseEvent;
 import net.shared.distributed.logging.Logger;
 import net.shared.distributed.utils.ReflectionHelper;
@@ -12,6 +13,7 @@ import net.shared.distributed.utils.ReflectionHelper;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Created by Guy on 16/05/2017.
@@ -114,6 +116,16 @@ public class Distributor implements CapabilityResponseEvent.CapabilityResponseLi
         int id = event.id;
         if(nodeCapabilities.containsKey(id))
             Collections.addAll(nodeCapabilities.get(id), event.response.capabilities);
+
+        new EventHandledEvent<>(event, CapabilityResponseEvent.class).Fire();
+    }
+
+    public Set<String> GetNodeCapabilities(int nodeId) {
+        return nodeCapabilities.get(nodeId);
+    }
+
+    public Stream<String> GetNodeCapabilityStream(int nodeId){
+        return GetNodeCapabilities(nodeId).stream();
     }
 
     public static class ResponseWrapper<T> {

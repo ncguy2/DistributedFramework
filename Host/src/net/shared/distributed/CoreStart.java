@@ -4,7 +4,6 @@ import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.capabilities.Capabilities;
 import net.shared.distributed.core.Core;
 import net.shared.distributed.distributor.Distributor;
-import net.shared.distributed.functions.StringToUpperFunction;
 import net.shared.distributed.logging.Logger;
 import net.shared.distributed.receptor.Receptor;
 
@@ -27,13 +26,13 @@ public class CoreStart {
             e.printStackTrace();
         }
 
-        try{
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        new StringToUpperFunction(distributor).Invoke("asdfghjkl");
+//        try{
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        new StringToUpperFunction(distributor).Invoke("asdfghjkl");
 
     }
 
@@ -43,7 +42,6 @@ public class CoreStart {
             distributor.HandleRoutedResponse(conn, (RoutedResponse) obj);
         else
             Capabilities.instance().Accept(conn, obj);
-
     }
 
 }

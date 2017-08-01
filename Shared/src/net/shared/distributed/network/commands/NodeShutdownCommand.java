@@ -8,7 +8,7 @@ import net.shared.distributed.event.node.NodeShutdownEvent;
 
 import java.io.Serializable;
 
-@Capability(name = "shutdown", nodeFunction = NodeShutdownCommand.NodeShutdownFunction.class)
+@Capability(name = "shutdown", nodeFunction = NodeShutdownCommand.NodeShutdownFunction.class, internal = true)
 public class NodeShutdownCommand implements Serializable {
 
     public static final long serialVersionUID = Registry.SerialVersions.KILL_COMMAND;

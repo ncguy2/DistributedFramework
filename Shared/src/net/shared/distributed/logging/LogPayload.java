@@ -7,7 +7,7 @@ import net.shared.distributed.capabilities.CapabilityFunction;
 
 import java.io.Serializable;
 
-@Capability(name = "Logging", nodeFunction = LogPayload.LogPayloadFunction.class, hostFunction = LogPayload.LogPayloadFunction.class)
+@Capability(name = "Logging", nodeFunction = LogPayload.LogPayloadFunction.class, hostFunction = LogPayload.LogPayloadFunction.class, internal = true)
 public class LogPayload implements Serializable {
 
     public static long serialVersionUID = Registry.SerialVersions.LOG_PAYLOAD;

@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 public class NodeOperator {
 
     public Map<String, Object> operatorData;
-    private final String name;
+    public final String name;
     private final Consumer<Map<String, Object>> func;
 
     public NodeOperator(String name, Consumer<Map<String, Object>> func, Map<String, Object> operatorData) {

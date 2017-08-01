@@ -12,11 +12,14 @@ import net.shared.distributed.node.operation.NodeOperator;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static net.shared.distributed.Registry.RegisterKryoClasses;
 
 public class NodeStart {
+
+    static boolean customName = false;
 
     static String coreHost = "";
     static String arg = "";
@@ -42,12 +45,17 @@ public class NodeStart {
                 continue;
             if (index < args.length - 1 && GetCoreUDP("-udp"))
                 continue;
+            if (index < args.length - 1 && GetNodeName("-name"))
+                continue;
         }
 
         if (!hasHost) {
             System.err.println("No host address provided, provide a host address using the '-host' switch");
             return;
         }
+
+        if (!customName)
+            Registry.name = UUID.randomUUID().toString();
 
         operators = new LinkedList<>();
 
@@ -72,8 +80,9 @@ public class NodeStart {
 
         while (alive.get()) {
             NodeOperator poll = operators.poll();
-            if (poll != null)
+            if (poll != null) {
                 poll.Invoke();
+            }
             try {
                 Thread.sleep(updateFreq);
             } catch (InterruptedException e) {
@@ -82,6 +91,17 @@ public class NodeStart {
         }
 
         System.out.println("Node instance closing");
+    }
+
+    private static boolean GetNodeName(String... switches) {
+        for (String switche : switches) {
+            if(arg.equalsIgnoreCase(switche)) {
+                customName = true;
+                Registry.name = args[index + 1];
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean GetCoreHost(String... switches) {

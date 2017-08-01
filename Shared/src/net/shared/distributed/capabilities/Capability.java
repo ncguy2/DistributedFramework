@@ -12,6 +12,8 @@ public @interface Capability {
     /** @return The internal name for the capability */
     String name();
 
+    boolean internal() default false;
+
     /** @return The class type for the invocation process to invoke on the host */
     Class<? extends CapabilityFunction> hostFunction() default CapabilityFunction.NoFunction.class;
     /** @return The class type for the invocation process to invoke on the node */

@@ -3,9 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DistributedFramework.iml" filepath="$PROJECT_DIR$/DistributedFramework.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Host/Host.iml" filepath="$PROJECT_DIR$/Host/Host.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Node/Node.iml" filepath="$PROJECT_DIR$/Node/Node.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Shared/Shared.iml" filepath="$PROJECT_DIR$/Shared/Shared.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Host/Host.iml" filepath="$PROJECT_DIR$/Host/Host.iml" group="Core" />
+      <module fileurl="file://$PROJECT_DIR$/HostUI/HostUI.iml" filepath="$PROJECT_DIR$/HostUI/HostUI.iml" group="Additional" />
+      <module fileurl="file://$PROJECT_DIR$/Node/Node.iml" filepath="$PROJECT_DIR$/Node/Node.iml" group="Core" />
+      <module fileurl="file://$PROJECT_DIR$/Shared/Shared.iml" filepath="$PROJECT_DIR$/Shared/Shared.iml" group="Core" />
     </modules>
   </component>
 </project>
