@@ -1,4 +1,4 @@
-package net.shared.distributed.capabilities;
+package net.shared.distributed.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,6 +21,8 @@ public @interface Capability {
 
     /** @return Whether the same CapabilityFunction instance should be used for all requests for this capability */
     boolean cache() default true;
+
+    Class<? extends ControlBuilder> builder() default ControlBuilder.NoneBuilder.class;
 
     enum Side {
         NONE,

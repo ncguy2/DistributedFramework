@@ -2,8 +2,8 @@ package net.shared.distributed.functions;
 
 import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.RoutedResponse;
-import net.shared.distributed.capabilities.Capability;
-import net.shared.distributed.capabilities.CapabilityFunction;
+import net.shared.distributed.api.Capability;
+import net.shared.distributed.capabilities.KryoCapabilityFunction;
 import net.shared.distributed.logging.Logger;
 
 @Capability(name = "String.toUpper", nodeFunction = StringToUpper.StringToUpperNodeFunction.class, hostFunction = StringToUpper.StringToUpperHostFunction.class)
@@ -11,14 +11,13 @@ public class StringToUpper {
 
     public String target;
 
-    public StringToUpper() {
-    }
+    public StringToUpper() {}
 
     public StringToUpper(String target) {
         this.target = target;
     }
 
-    public static class StringToUpperNodeFunction extends CapabilityFunction<StringToUpper> {
+    public static class StringToUpperNodeFunction extends KryoCapabilityFunction<StringToUpper> {
 
         @Override
         public void Invoke(Connection conn) {
@@ -28,7 +27,7 @@ public class StringToUpper {
         }
     }
 
-    public static class StringToUpperHostFunction extends CapabilityFunction<StringToUpper> {
+    public static class StringToUpperHostFunction extends KryoCapabilityFunction<StringToUpper> {
 
         @Override
         public void Invoke(Connection conn) {

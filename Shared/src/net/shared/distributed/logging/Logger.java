@@ -34,6 +34,14 @@ public class Logger {
     public void Debug  (String text) { Log(DEBUG,   text); }
     public void Verbose(String text) { Log(VERBOSE, text); }
 
+    public void Info   (String format, Object... args) { Info   (String.format(format, args)); }
+    public void Warn   (String format, Object... args) { Warn   (String.format(format, args)); }
+    public void Error  (String format, Object... args) { Error  (String.format(format, args)); }
+    public void Fatal  (String format, Object... args) { Fatal  (String.format(format, args)); }
+    public void Debug  (String format, Object... args) { Debug  (String.format(format, args)); }
+    public void Verbose(String format, Object... args) { Verbose(String.format(format, args)); }
+
+
     public enum LogLevel {
         FATAL,
         ERROR,

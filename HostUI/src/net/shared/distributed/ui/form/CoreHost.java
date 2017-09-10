@@ -9,6 +9,8 @@ import net.shared.distributed.event.NodeConnectedEvent;
 import net.shared.distributed.event.NodeDisconnectedEvent;
 import net.shared.distributed.event.host.CapabilityResponseEvent;
 import net.shared.distributed.event.node.NameResponseEvent;
+import net.shared.distributed.functions.DistributedFunctions;
+import net.shared.distributed.api.IDistributedFunction;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -23,6 +25,9 @@ public class CoreHost implements NodeConnectedEvent.NodeConnectedListener, NodeD
     private JPanel rootPanel;
     private JList<ListEntry> nodeList;
     private JList<String> capabilityList;
+    private JTextField nodeNameField;
+    private JTextField nodeLocationField;
+    private JTextField nodeIdField;
 
     private List<ListEntry> nameMap;
     int selectedNode = -1;
@@ -32,6 +37,16 @@ public class CoreHost implements NodeConnectedEvent.NodeConnectedListener, NodeD
         EventBus.instance().register(this);
 
         nodeList.addListSelectionListener(e -> SelectNode(nodeList.getSelectedValue().id));
+        capabilityList.addListSelectionListener(e -> {
+            String selectedValue = capabilityList.getSelectedValue();
+            Optional<Class<?>> aClass = Capabilities.instance().GetCapabilityClass(selectedValue);
+            aClass.ifPresent(cls -> {
+                Optional<IDistributedFunction> func = DistributedFunctions.instance().GetFunction(cls);
+                func.ifPresent(f -> f.Invoke("ASdsad"));
+            });
+//            Optional<?> cap = Capabilities.instance().BuildCapability(selectedValue);
+
+        });
     }
 
     public JPanel GetRootPanel() {
@@ -43,6 +58,12 @@ public class CoreHost implements NodeConnectedEvent.NodeConnectedListener, NodeD
         Vector<String> capabilities = new Vector<>(CoreStart.distributor.GetNodeCapabilityStream(nodeId)
                 .filter(Capabilities.instance()::IsExternal)
                 .collect(Collectors.toList()));
+
+        Optional<ListEntry> entry = FindInModel(selectedNode);
+        entry.ifPresent(listEntry -> nodeNameField.setText(listEntry.name));
+        nodeIdField.setText(String.valueOf(selectedNode));
+        nodeLocationField.setText(CoreStart.distributor.nodeSockets.get(selectedNode).getRemoteAddressTCP().getHostName());
+
         capabilityList.setListData(capabilities);
     }
 

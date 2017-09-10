@@ -2,8 +2,8 @@ package net.shared.distributed.network.commands;
 
 import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.Registry;
-import net.shared.distributed.capabilities.Capability;
-import net.shared.distributed.capabilities.CapabilityFunction;
+import net.shared.distributed.api.Capability;
+import net.shared.distributed.capabilities.KryoCapabilityFunction;
 import net.shared.distributed.event.node.NodeShutdownEvent;
 
 import java.io.Serializable;
@@ -16,7 +16,7 @@ public class NodeShutdownCommand implements Serializable {
     public NodeShutdownCommand() {
     }
 
-    public static class NodeShutdownFunction extends CapabilityFunction<NodeShutdownCommand> {
+    public static class NodeShutdownFunction extends KryoCapabilityFunction<NodeShutdownCommand> {
 
         @Override
         public void Invoke(Connection conn) {

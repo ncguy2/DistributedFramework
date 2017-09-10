@@ -20,6 +20,8 @@ public class CoreStart {
         distributor = new Distributor(core);
         receptor = new Receptor(core, distributor);
 
+
+
         try {
             receptor.StartListening(Registry.TCP_PORT, Registry.UDP_PORT, CoreStart::NodeCommFunctions);
         } catch (IOException e) {

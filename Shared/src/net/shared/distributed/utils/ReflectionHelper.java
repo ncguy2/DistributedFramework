@@ -19,7 +19,8 @@ public class ReflectionHelper {
 
     public static Set<Class<?>> GetAnnotatedTypes(Class<? extends Annotation> annotation) {
         Reflections ref = new Reflections();
-        return ref.getTypesAnnotatedWith(annotation);
+        Set<Class<?>> typesAnnotatedWith = ref.getTypesAnnotatedWith(annotation);
+        return typesAnnotatedWith;
     }
 
     public static Stream<Class<?>> GetAnnotatedTypeStream(Class<? extends Annotation> annotation) {

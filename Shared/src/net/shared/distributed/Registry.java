@@ -4,6 +4,8 @@ import com.esotericsoftware.kryo.Kryo;
 import net.shared.distributed.capabilities.Capabilities;
 import net.shared.distributed.logging.Logger;
 
+import java.util.Collection;
+
 public class Registry {
 
     public static final int TCP_PORT = 3301;
@@ -30,7 +32,8 @@ public class Registry {
         kryo.register(RoutedResponse.class);
 
         // Dynamic
-        Capabilities.instance().capabilities.values().forEach(kryo::register);
+        Collection<Class<?>> values = Capabilities.instance().capabilities.values();
+        values.forEach(kryo::register);
 
     }
 

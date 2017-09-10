@@ -2,8 +2,8 @@ package net.shared.distributed.logging;
 
 import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.Registry;
-import net.shared.distributed.capabilities.Capability;
-import net.shared.distributed.capabilities.CapabilityFunction;
+import net.shared.distributed.api.Capability;
+import net.shared.distributed.capabilities.KryoCapabilityFunction;
 
 import java.io.Serializable;
 
@@ -22,7 +22,7 @@ public class LogPayload implements Serializable {
         this.text = text;
     }
 
-    public static class LogPayloadFunction extends CapabilityFunction<LogPayload> {
+    public static class LogPayloadFunction extends KryoCapabilityFunction<LogPayload> {
 
         public LogPayloadFunction() { super(); }
 

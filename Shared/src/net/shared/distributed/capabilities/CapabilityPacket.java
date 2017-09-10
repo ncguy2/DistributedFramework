@@ -2,6 +2,7 @@ package net.shared.distributed.capabilities;
 
 import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.Registry;
+import net.shared.distributed.api.Capability;
 import net.shared.distributed.event.host.CapabilityResponseEvent;
 import net.shared.distributed.event.node.NameResponseEvent;
 import net.shared.distributed.logging.Logger;
@@ -16,7 +17,7 @@ public class CapabilityPacket {
 
         public static final long serialVersionUID = Registry.SerialVersions.CAPABILITY_REQUEST;
 
-        public static class RequestFunction extends CapabilityFunction<Request> {
+        public static class RequestFunction extends KryoCapabilityFunction<Request> {
             @Override
             public void Invoke(Connection conn) {
                 Set<String> strings = Capabilities.instance().GetNodeCapabilities();
@@ -43,7 +44,7 @@ public class CapabilityPacket {
             this.capabilities = capabilities;
         }
 
-        public static class ResponseFunction extends CapabilityFunction<Response> {
+        public static class ResponseFunction extends KryoCapabilityFunction<Response> {
 
             @Override
             public void Invoke(Connection conn) {
@@ -59,7 +60,7 @@ public class CapabilityPacket {
     public static class NameRequest implements Serializable {
         public static final long serialVersionUID = Registry.SerialVersions.NAME_REQUEST;
 
-        public static class NameRequestFunction extends CapabilityFunction<NameRequest> {
+        public static class NameRequestFunction extends KryoCapabilityFunction<NameRequest> {
 
             @Override
             public void Invoke(Connection conn) {
@@ -83,7 +84,7 @@ public class CapabilityPacket {
             this.name = name;
         }
 
-        public static class NameResponseFunction extends CapabilityFunction<NameResponse> {
+        public static class NameResponseFunction extends KryoCapabilityFunction<NameResponse> {
             @Override
             public void Invoke(Connection conn) {
                 new NameResponseEvent(conn.getID(), packet.name).Fire();

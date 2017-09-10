@@ -1,13 +1,15 @@
 package net.shared.distributed.functions;
 
+import net.shared.distributed.api.DistributedFunction;
+import net.shared.distributed.api.IDistributedFunction;
+import net.shared.distributed.api.internal.DistributionInfo;
 import net.shared.distributed.distributor.Distributor;
 import net.shared.distributed.logging.Logger;
 
 import java.util.Map;
 
-@DistributedFunction("String::ToUpper")
+@DistributedFunction(StringToUpper.class)
 public class StringToUpperFunction extends IDistributedFunction<String, StringToUpper> {
-
 
     public StringToUpperFunction(Distributor distributor) {
         super(distributor);
@@ -19,7 +21,7 @@ public class StringToUpperFunction extends IDistributedFunction<String, StringTo
     }
 
     @Override
-    public StringToUpper SegmentPayload(Distributor.DistributionInfo<String> info) {
+    public StringToUpper SegmentPayload(DistributionInfo<String> info) {
         int blockSize = info.targetData.length() / info.max;
         String[] parts = new String[info.max];
         int processedLength = 0;

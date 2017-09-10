@@ -3,7 +3,7 @@ package net.shared.distributed.node;
 import com.esotericsoftware.kryonet.Client;
 import net.shared.distributed.Registry;
 import net.shared.distributed.capabilities.Capabilities;
-import net.shared.distributed.capabilities.Capability;
+import net.shared.distributed.api.Capability;
 import net.shared.distributed.logging.Logger;
 import net.shared.distributed.node.connection.NodeKryoListener;
 import net.shared.distributed.node.logging.NodeLogImpl;

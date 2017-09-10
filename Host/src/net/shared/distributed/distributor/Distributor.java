@@ -2,7 +2,9 @@ package net.shared.distributed.distributor;
 
 import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.RoutedResponse;
-import net.shared.distributed.capabilities.Capability;
+import net.shared.distributed.api.Capability;
+import net.shared.distributed.api.internal.DistributionInfo;
+import net.shared.distributed.api.internal.IDistributor;
 import net.shared.distributed.core.Core;
 import net.shared.distributed.event.EventBus;
 import net.shared.distributed.event.EventHandledEvent;
@@ -18,7 +20,7 @@ import java.util.stream.Stream;
 /**
  * Created by Guy on 16/05/2017.
  */
-public class Distributor implements CapabilityResponseEvent.CapabilityResponseListener {
+public class Distributor implements IDistributor, CapabilityResponseEvent.CapabilityResponseListener {
 
 
     public Map<Integer, ResponseWrapper> pendingResponses;
@@ -36,6 +38,7 @@ public class Distributor implements CapabilityResponseEvent.CapabilityResponseLi
         EventBus.instance().register(this);
     }
 
+    @Override
     public Optional<Set<Integer>> GetCapableNodeIds(Class<?> pktCls) {
         Optional<Capability> capability = ReflectionHelper.GetAnnotation(pktCls, Capability.class);
         if(!capability.isPresent()) return Optional.empty();
@@ -51,6 +54,7 @@ public class Distributor implements CapabilityResponseEvent.CapabilityResponseLi
         return Optional.of(capableNodes);
     }
 
+    @Override
     public <T, U> void Distribute(T target, Class<U> segmentType, Function<DistributionInfo<T>, U> segmentation, Function<Map<Integer, Object>, T> callbackFactory, BiConsumer<T, T> callback) {
         Class<?> dataCls = target.getClass();
         Logger.instance().Debug("Distributor invoked, classtype " + dataCls.getSimpleName());
@@ -81,6 +85,7 @@ public class Distributor implements CapabilityResponseEvent.CapabilityResponseLi
         SpawnThread(target, hashCode, segmentMap, callbackFactory, callback);
     }
 
+    @Override
     public <T, U> void SpawnThread(T target, int hashCode, final Map<Integer, U> segmentMap, final Function<Map<Integer, Object>, T> callbackFactory, BiConsumer<T, T> callback) {
         Map<Integer, Object> returnedData = new HashMap<>();
         List<Integer> remainingIds = new ArrayList<>();
@@ -152,12 +157,6 @@ public class Distributor implements CapabilityResponseEvent.CapabilityResponseLi
             callback.accept(originalData, callbackFactory.apply(returnedData));
         }
 
-    }
-
-    public static class DistributionInfo<T> {
-        public int current;
-        public int max;
-        public T targetData;
     }
 
 }

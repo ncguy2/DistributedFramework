@@ -1,7 +1,7 @@
 package net.shared.distributed.core;
 
 import net.shared.distributed.capabilities.Capabilities;
-import net.shared.distributed.capabilities.Capability;
+import net.shared.distributed.api.Capability;
 import net.shared.distributed.distributor.Distributor;
 
 /**
