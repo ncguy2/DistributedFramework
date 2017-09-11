@@ -1,6 +1,6 @@
 package net.shared.distributed.network;
 
-import net.shared.distributed.logging.Logger;
+import net.shared.distributed.api.logging.Logger;
 
 import java.io.*;
 import java.util.function.BiConsumer;

@@ -9,7 +9,7 @@ import net.shared.distributed.core.Core;
 import net.shared.distributed.distributor.Distributor;
 import net.shared.distributed.event.NodeConnectedEvent;
 import net.shared.distributed.event.NodeDisconnectedEvent;
-import net.shared.distributed.logging.Logger;
+import net.shared.distributed.api.logging.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,15 +1,25 @@
 package net.shared.distributed;
 
 import com.esotericsoftware.kryo.Kryo;
+import net.shared.distributed.api.internal.IDistributedFunctions;
+import net.shared.distributed.api.logging.Logger;
 import net.shared.distributed.capabilities.Capabilities;
-import net.shared.distributed.logging.Logger;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class Registry {
 
-    public static final int TCP_PORT = 3301;
-    public static final int UDP_PORT = 3302;
+    public static final int TCP_PORT;
+    public static final int UDP_PORT;
+
+    public static IDistributedFunctions functionHost = null;
+
+    static {
+        TCP_PORT = 3301;
+        UDP_PORT = 3302;
+    }
 
     public static String name = "UNDEFINED";
 
@@ -24,6 +34,8 @@ public class Registry {
     }
 
     public static void RegisterKryoClasses(Kryo kryo) {
+        System.out.println("Registry.RegisterKryoClasses");
+
         // Native
         kryo.register(String[].class);
 
@@ -31,10 +43,35 @@ public class Registry {
         kryo.register(Logger.LogLevel.class);
         kryo.register(RoutedResponse.class);
 
-        // Dynamic
-        Collection<Class<?>> values = Capabilities.instance().capabilities.values();
-        values.forEach(kryo::register);
+        kryo.setRegistrationRequired(false);
 
+        List<Class<?>> clsList = new ArrayList<>();
+
+        // Dynamic
+        Capabilities.instance().capabilities.values()
+                .stream()
+                .sorted(Comparator.comparing(Class::getCanonicalName))
+                .forEach(clsList::add);
+
+        Capabilities.instance().loader.plugins.stream().sorted().forEach(plugin -> plugin.RegisterPackets(clsList));
+
+        clsList.stream().distinct().forEach(c -> Register(kryo, c));
+
+//        pluginRegistration.entrySet().stream().sorted().forEach(entry -> {
+//
+//            DistributedPlugin key = entry.getKey();
+//            List<Class<?>> cls = entry.getValue();
+//            Logger.instance().Debug("Plugin %s registering classes:", key.Name());
+//
+//            cls.stream().sorted(Comparator.comparing(Class::getCanonicalName)).forEach(c -> Register(kryo, c));
+//        });
+        kryo.setRegistrationRequired(true);
+
+    }
+
+    protected static void Register(Kryo kryo, Class<?> cls) {
+        kryo.register(cls);
+        Logger.instance().Debug("\t- %s now registered", cls.getCanonicalName());
     }
 
 }

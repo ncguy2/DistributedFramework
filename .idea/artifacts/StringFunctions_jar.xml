@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="StringFunctions:jar">
+    <output-path>$PROJECT_DIR$/plugins</output-path>
+    <root id="archive" name="StringFunctions.jar">
+      <element id="module-output" name="StringFunctions" />
+      <element id="directory" name="META-INF">
+        <element id="dir-copy" path="$PROJECT_DIR$/PluginSource/StringFunctions/meta/META-INF" />
+      </element>
+    </root>
+  </artifact>
+</component>

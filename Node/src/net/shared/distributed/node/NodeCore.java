@@ -3,7 +3,7 @@ package net.shared.distributed.node;
 import com.esotericsoftware.kryonet.Client;
 import net.shared.distributed.event.EventBus;
 import net.shared.distributed.event.node.NodeShutdownEvent;
-import net.shared.distributed.logging.Logger;
+import net.shared.distributed.api.logging.Logger;
 
 import java.io.IOException;
 

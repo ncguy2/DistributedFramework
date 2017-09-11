@@ -1,9 +1,9 @@
 package net.shared.distributed.node.logging;
 
 import com.esotericsoftware.kryonet.Client;
-import net.shared.distributed.logging.ILogImpl;
+import net.shared.distributed.api.internal.ILogImpl;
 import net.shared.distributed.logging.LogPayload;
-import net.shared.distributed.logging.Logger;
+import net.shared.distributed.api.logging.Logger;
 
 public class NodeLogImpl implements ILogImpl {
 

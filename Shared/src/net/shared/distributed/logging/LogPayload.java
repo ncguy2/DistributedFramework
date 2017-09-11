@@ -1,8 +1,9 @@
 package net.shared.distributed.logging;
 
-import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.Registry;
 import net.shared.distributed.api.Capability;
+import net.shared.distributed.api.logging.Logger;
+import net.shared.distributed.capabilities.ConnectionWrapper;
 import net.shared.distributed.capabilities.KryoCapabilityFunction;
 
 import java.io.Serializable;
@@ -27,7 +28,7 @@ public class LogPayload implements Serializable {
         public LogPayloadFunction() { super(); }
 
         @Override
-        public void Invoke(Connection conn) {
+        public void Invoke(ConnectionWrapper conn) {
             Logger.instance().Log(packet.level, packet.text);
         }
     }

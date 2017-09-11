@@ -1,6 +1,6 @@
 package net.shared.distributed.node.operation;
 
-import net.shared.distributed.logging.Logger;
+import net.shared.distributed.api.logging.Logger;
 
 import java.util.Map;
 import java.util.function.Consumer;

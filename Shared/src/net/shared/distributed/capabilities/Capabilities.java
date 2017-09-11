@@ -3,7 +3,8 @@ package net.shared.distributed.capabilities;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.FrameworkMessage;
 import net.shared.distributed.api.Capability;
-import net.shared.distributed.logging.Logger;
+import net.shared.distributed.api.CapabilityFunction;
+import net.shared.distributed.api.logging.Logger;
 import net.shared.distributed.utils.ReflectionHelper;
 
 import java.util.*;
@@ -69,7 +70,8 @@ public class Capabilities {
         List<Class<?>> collect = ReflectionHelper.GetAnnotatedTypeStream(Capability.class)
                 .sorted(Comparator.comparingInt(cls -> cls.getCanonicalName().hashCode()))
                 .collect(Collectors.toList());
-        collect.forEach(this::AddCapability);
+        loader.plugins.forEach(plugin -> plugin.RegisterPackets(collect));
+        collect.stream().distinct().forEach(this::AddCapability);
     }
 
     public <T> void Accept(final Connection conn, final T obj) {
@@ -78,7 +80,7 @@ public class Capabilities {
         if(IsBlacklisted(objCls)) return;
         if(IsCapable(objCls)) {
             Logger.instance().Debug(cap.name() + " received, invoking...");
-            GetFunction(obj.getClass()).SetPacket_Unsafe(obj).Invoke(conn);
+            GetFunction(obj.getClass()).SetPacket_Unsafe(obj).Invoke(new ConnectionWrapper(conn));
         } else Logger.instance().Warn("Request received, but is incapable of executing [" + objCls.getSimpleName() + "]");
     }
 
@@ -150,9 +152,9 @@ public class Capabilities {
         return null;
     }
 
-    public <T> KryoCapabilityFunction<T> GetFunction(Class<T> cls) {
-        Class<? extends KryoCapabilityFunction<T>> aClass = GetFunctionClass(cls);
-        Optional<? extends KryoCapabilityFunction<T>> build = ReflectionHelper.Build(aClass);
+    public <T> CapabilityFunction<T, ConnectionWrapper> GetFunction(Class<T> cls) {
+        Class<? extends CapabilityFunction<T, ConnectionWrapper>> aClass = GetFunctionClass(cls);
+        Optional<? extends CapabilityFunction<T, ConnectionWrapper>> build = ReflectionHelper.Build(aClass);
         return build.orElse(null);
 
         // TODO reimplement cache

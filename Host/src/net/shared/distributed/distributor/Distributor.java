@@ -9,7 +9,7 @@ import net.shared.distributed.core.Core;
 import net.shared.distributed.event.EventBus;
 import net.shared.distributed.event.EventHandledEvent;
 import net.shared.distributed.event.host.CapabilityResponseEvent;
-import net.shared.distributed.logging.Logger;
+import net.shared.distributed.api.logging.Logger;
 import net.shared.distributed.utils.ReflectionHelper;
 
 import java.util.*;

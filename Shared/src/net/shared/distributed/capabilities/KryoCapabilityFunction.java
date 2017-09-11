@@ -1,10 +1,9 @@
 package net.shared.distributed.capabilities;
 
-import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.api.CapabilityFunction;
 
-public abstract class KryoCapabilityFunction<T> extends CapabilityFunction<T, Connection> {
+public abstract class KryoCapabilityFunction<T> extends CapabilityFunction<T, ConnectionWrapper> {
 
-    public static class NoFunction extends CapabilityFunction.NoFunction<Connection> {}
+    public static class NoFunction extends CapabilityFunction.NoFunction<ConnectionWrapper> {}
 
 }

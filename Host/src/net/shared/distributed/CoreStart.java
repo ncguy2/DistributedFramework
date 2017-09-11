@@ -4,7 +4,8 @@ import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.capabilities.Capabilities;
 import net.shared.distributed.core.Core;
 import net.shared.distributed.distributor.Distributor;
-import net.shared.distributed.logging.Logger;
+import net.shared.distributed.api.logging.Logger;
+import net.shared.distributed.functions.DistributedFunctions;
 import net.shared.distributed.receptor.Receptor;
 
 import java.io.IOException;
@@ -16,6 +17,9 @@ public class CoreStart {
     public static Receptor receptor;
 
     public static void main(String... args) {
+
+        Registry.functionHost = DistributedFunctions.instance();
+
         core = new Core();
         distributor = new Distributor(core);
         receptor = new Receptor(core, distributor);

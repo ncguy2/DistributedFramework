@@ -2,6 +2,7 @@ package net.shared.distributed.utils;
 
 import org.reflections.Reflections;
 
+import java.beans.Expression;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +36,7 @@ public class ReflectionHelper {
                 for (int i = 0; i < args.length; i++)
                     argTypes[i] = args[i].getClass();
                 ctor = cls.getDeclaredConstructor(argTypes);
+
             } else {
                 ctor = cls.getDeclaredConstructor();
             }
@@ -54,6 +56,17 @@ public class ReflectionHelper {
             e.printStackTrace();
         }
 
+        return Optional.empty();
+    }
+
+    public static <T> Optional<T> BuildExpression(Class<T> cls, Object... args) {
+        try {
+            Expression exp = new Expression(cls, "new", args);
+            Object value = exp.getValue();
+            return Optional.ofNullable((T) value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return Optional.empty();
     }
 

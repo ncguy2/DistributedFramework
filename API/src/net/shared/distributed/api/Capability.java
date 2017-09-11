@@ -12,6 +12,7 @@ public @interface Capability {
     /** @return The internal name for the capability */
     String name();
 
+    /** @return Whether the capability should be accessible externally, defaults to false */
     boolean internal() default false;
 
     /** @return The class type for the invocation process to invoke on the host */
@@ -22,8 +23,13 @@ public @interface Capability {
     /** @return Whether the same CapabilityFunction instance should be used for all requests for this capability */
     boolean cache() default true;
 
+    /** @return The control builder for UI systems */
     Class<? extends ControlBuilder> builder() default ControlBuilder.NoneBuilder.class;
 
+    /**
+     * Which side the capability is running on
+     * (could be extracted to own top-level class)
+     */
     enum Side {
         NONE,
         HOST,

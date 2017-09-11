@@ -1,6 +1,8 @@
-package net.shared.distributed.logging;
+package net.shared.distributed.api.logging;
 
-import static net.shared.distributed.logging.Logger.LogLevel.*;
+import net.shared.distributed.api.internal.ILogImpl;
+
+import static net.shared.distributed.api.logging.Logger.LogLevel.*;
 
 public class Logger {
 

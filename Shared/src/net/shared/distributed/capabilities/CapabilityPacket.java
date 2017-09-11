@@ -1,11 +1,10 @@
 package net.shared.distributed.capabilities;
 
-import com.esotericsoftware.kryonet.Connection;
 import net.shared.distributed.Registry;
 import net.shared.distributed.api.Capability;
 import net.shared.distributed.event.host.CapabilityResponseEvent;
 import net.shared.distributed.event.node.NameResponseEvent;
-import net.shared.distributed.logging.Logger;
+import net.shared.distributed.api.logging.Logger;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -19,12 +18,12 @@ public class CapabilityPacket {
 
         public static class RequestFunction extends KryoCapabilityFunction<Request> {
             @Override
-            public void Invoke(Connection conn) {
+            public void Invoke(ConnectionWrapper conn) {
                 Set<String> strings = Capabilities.instance().GetNodeCapabilities();
                 String[] caps = new String[strings.size()];
                 strings.toArray(caps);
                 Response resp = new Response(caps);
-                conn.sendTCP(resp);
+                conn.Send(resp);
             }
         }
 
@@ -47,8 +46,8 @@ public class CapabilityPacket {
         public static class ResponseFunction extends KryoCapabilityFunction<Response> {
 
             @Override
-            public void Invoke(Connection conn) {
-                new CapabilityResponseEvent(conn.getID(), packet).Fire();
+            public void Invoke(ConnectionWrapper conn) {
+                new CapabilityResponseEvent(conn.GetId(), packet).Fire();
                 Logger.instance().Info("Node capabilities received: ");
                 for (String cap : packet.capabilities)
                     Logger.instance().Debug("\t" + cap);
@@ -63,9 +62,9 @@ public class CapabilityPacket {
         public static class NameRequestFunction extends KryoCapabilityFunction<NameRequest> {
 
             @Override
-            public void Invoke(Connection conn) {
+            public void Invoke(ConnectionWrapper conn) {
                 NameResponse resp = new NameResponse(Registry.name);
-                conn.sendTCP(resp);
+                conn.Send(resp);
             }
         }
     }
@@ -86,8 +85,8 @@ public class CapabilityPacket {
 
         public static class NameResponseFunction extends KryoCapabilityFunction<NameResponse> {
             @Override
-            public void Invoke(Connection conn) {
-                new NameResponseEvent(conn.getID(), packet.name).Fire();
+            public void Invoke(ConnectionWrapper conn) {
+                new NameResponseEvent(conn.GetId(), packet.name).Fire();
                 Logger.instance().Info("Node name received: " + packet.name);
             }
         }

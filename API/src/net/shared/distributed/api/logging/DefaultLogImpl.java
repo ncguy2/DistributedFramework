@@ -1,4 +1,6 @@
-package net.shared.distributed.logging;
+package net.shared.distributed.api.logging;
+
+import net.shared.distributed.api.internal.ILogImpl;
 
 public class DefaultLogImpl implements ILogImpl {
 
